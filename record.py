@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!.venv/bin/python3
 ## record.py
 ##
 ## Hands-free voice audio recording to mp3, wav, other types
@@ -108,4 +108,3 @@ except KeyboardInterrupt:
 lvl_pipe.set_state(Gst.State.NULL)
 if rec_pipe:
     rec_pipe.set_state(Gst.State.NULL)
-
