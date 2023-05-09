@@ -21,27 +21,31 @@
 import os, shlex
 import tempfile
 import threading
+from faster_whisper import WhisperModel
 
-# init whisper_jax
-from whisper_jax import FlaxWhisperPipline
-import jax.numpy as jnp
+# model_size = "large-v2"
+# model_size = "small.en"
+model_size = "medium.en"
 
-pipeline = FlaxWhisperPipline("openai/whisper-small.en", \
-   dtype = jnp.float16, batch_size=16)
+# Run on GPU with FP16
+# model = WhisperModel(model_size, device="cuda", compute_type="float16")
 
-# cache the function for subsequent speedup
-pipeline("click.wav",  task="transcribe", return_timestamps=False)
+# or run on GPU with INT8
+# model = WhisperModel(model_size, device="cuda", compute_type="int8_float16")
+# or run on CPU with INT8
+model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 print("Start speaking. Text should appear in current window.")
 def transcribe(f):
     # transcribe it
     try:
-        outputs = pipeline(f,  task="transcribe", \
-        return_timestamps=False)
-        txt = shlex.quote(outputs['text'])
-        if outputs['text'] != ' you':
-            print('\r' + outputs['text'])
-            os.system("xdotool type --clearmodifiers " + txt)
+        segments, info = model.transcribe(f, beam_size=5)
+        print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
+        for segment in segments:
+            txt = shlex.quote(segment.text)
+            if segment.text != ' you':
+                print('\r' + segment.text)
+                os.system("xdotool type --clearmodifiers " + txt)
     except Exception as e: print(e)
     # cleanup
     os.remove(f)
