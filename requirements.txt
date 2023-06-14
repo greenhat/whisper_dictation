@@ -36,7 +36,7 @@ tensorstore==0.1.36
 tokenizers==0.13.3
 toolz==0.12.0
 tqdm==4.65.0
-transformers==4.28.1
+transformers==4.30.0
 typing_extensions==4.5.0
 urllib3==2.0.2
 whisper-jax @ git+https://github.com/sanchit-gandhi/whisper-jax.git@0d3bc54c8c673d71732ba6bc20fa0323b1101fa6
